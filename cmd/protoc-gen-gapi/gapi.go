@@ -14,7 +14,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func generateGAPI(p *protogen.Plugin, fd *protogen.File) {
+func generateGAPI(_ *protogen.Plugin, fd *protogen.File) {
 	data := getProtoFile(fd)
 	bs, err := MakeGAPIContent(data)
 	if err != nil {
@@ -22,7 +22,7 @@ func generateGAPI(p *protogen.Plugin, fd *protogen.File) {
 		return
 	}
 	fileName := strings.ReplaceAll(fd.Proto.GetName(), ".proto", "pb.gapi.go")
-	if strings.Index(*fd.Proto.GetOptions().GoPackage, "/") != -1 {
+	if strings.Contains(*fd.Proto.GetOptions().GoPackage, "/") {
 		names := strings.Split(fd.Proto.GetName(), "/")
 		fileName = path.Join(*fd.Proto.GetOptions().GoPackage, strings.ReplaceAll(names[len(names)-1], ".proto", ".pb.gapi.go"))
 	}
@@ -31,13 +31,13 @@ func generateGAPI(p *protogen.Plugin, fd *protogen.File) {
 		log.Println("create gapi file err:", err)
 		return
 	}
-	_, _ = fmt.Fprint(gfd, bs)
+	_, _ = fmt.Fprint(gfd, string(bs))
 }
 
 func getProtoFile(fd *protogen.File) *ProtoFile {
 	pf := new(ProtoFile)
 	pf.Source = fd.Proto.GetName()
-	pf.Package = fd.Proto.GetPackage()
+	pf.Package = string(fd.GoPackageName)
 	pf.Version = Version
 	for _, srv := range fd.Services {
 		pf.Services = append(pf.Services, getProtoService(srv))

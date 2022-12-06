@@ -25,6 +25,7 @@ func gen(p *protogen.Plugin) error {
 			continue
 		}
 		generateGAPI(p, fd)
+		generateInject(p, fd)
 	}
 	return nil
 }
