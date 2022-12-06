@@ -1,0 +1,22 @@
+syntax = "proto3"
+
+import "google/api/annotations.proto";
+
+service Greeter {
+	rpc Hello(Request) returns (Response) {
+		option (google.api.http) = { post: "/hello"; body: "body"; };
+	}
+}
+
+message Request {
+	string name = 1; // http.query
+    Body body = 2;
+}
+
+message Body {
+    string name = 1;
+}
+
+message Response {
+	string msg = 1;
+}
